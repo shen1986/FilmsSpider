@@ -32,10 +32,11 @@ def get_data(filmName_list):
         soup = get_page(host + each['href'])
         # print ("soup", soup)
         content = soup.find('div', id="Zoom")
-        pContent = content.find('p'); # 找到第一个P标签，去除所有的br标签
+        pContent = content.find('p'); # 找到第一个P标签
         for each in pContent:
-            # eachone = each.strip();
-            if len(each) == 0 or each == '<br>' or each == '<br/>':
+            # 转成string类型，把多余的空格去掉
+            eachone = str(each).strip()
+            if len(eachone) == 0 or eachone == '<br>' or eachone == '<br/>':
                 continue
             print (each)
         # print ("pContent", pContent)
