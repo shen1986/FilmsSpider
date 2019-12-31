@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-import time;
+import time
 
 # 定义一些常量
 host = 'https://www.dytt8.net' # 电影天堂根地址
@@ -28,18 +28,24 @@ def get_data(filmName_list):
             continue
 
         # 获取每个电影的详细内容
-        print(each.text.strip())
+        filmName = each.text.strip()
         soup = get_page(host + each['href'])
-        print (soup)
-        content = soup.find('div', id_="Zoom")
-        print (content)
+        # print ("soup", soup)
+        content = soup.find('div', id="Zoom")
+        pContent = content.find('p'); # 找到第一个P标签，去除所有的br标签
+        for each in pContent:
+            # eachone = each.strip();
+            if len(each) == 0 or each == '<br>' or each == '<br/>':
+                continue
+            print (each)
+        # print ("pContent", pContent)
         # 以免被反爬虫，每爬一个网页就休息会
+        break
         time.sleep(1)
 
 
 # 主进程逻辑
 soup = get_page(host + url)
 new_films=soup.find('div', class_="co_content8")
-print (new_films)
 filmName_list =new_films.find_all('a');
 get_data(filmName_list)
