@@ -7,6 +7,7 @@ import random
 # 定义一些常量
 host = 'https://www.dytt8.net' # 电影天堂根地址
 url = '/index0.html' # 电影天堂主页
+split = '&'
 
 # 获取页面
 def get_page(link):
@@ -37,16 +38,22 @@ def get_data(filmName_list):
         # print ("soup", soup)
         content = soup.find('div', id="Zoom")
         pContent = content.find('p'); # 找到第一个P标签
-        # 电影的详细内容解析
-        for each in pContent:
-            # 转成string类型，把多余的空格去掉
-            eachone = str(each).strip()
-            if len(eachone) == 0 or eachone == '<br>' or eachone == '<br/>':
-                continue
-            print (each)
+        with open('film.txt', 'a+', encoding='utf-8') as f:
+            # 电影的详细内容解析
+            for each in pContent:
+                # 转成string类型，把多余的空格去掉
+                eachone = str(each).strip()
+                if len(eachone) == 0 or eachone == '<br>' or eachone == '<br/>':
+                    continue
+
+                # 把怕取出来的内容放到文件中去
+                f.write(eachone + '\n')
+            mySplit = split * 50
+            f.write(mySplit + '\n')
+            f.close()
         # print ("pContent", pContent)
         # 以免被反爬虫，每爬一个网页就休息会, 且间隔时间不一样。
-        # 没爬5条，就休息10s钟。
+        # 每爬5条，就休息10s钟。
         scrap_times += 1
         if scrap_times % 5 == 0:
             sleep_time = 10 + random.random()
