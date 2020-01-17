@@ -4,6 +4,7 @@ import requests
 import random
 import time
 import filmConfig as fc
+import MongoOP as mop
 
 # 获取页面
 def get_page(link):
@@ -33,19 +34,30 @@ def get_data(filmName_list):
         soup = get_page(fc.host + each['href'])
         content = soup.find('div', id="Zoom")
         pContent = content.find('p'); # 找到第一个P标签
-        with open('film.txt', 'a+', encoding='utf-8') as f:
-            # 电影的详细内容解析
-            for each in pContent:
-                # 转成string类型，把多余的空格去掉
-                eachone = str(each).strip()
-                if len(eachone) == 0 or eachone == '<br>' or eachone == '<br/>':
-                    continue
+        # with open('film.txt', 'a+', encoding='utf-8') as f:
+        #     # 电影的详细内容解析
+        #     for each in pContent:
+        #         # 转成string类型，把多余的空格去掉
+        #         eachone = str(each).strip()
+        #         if len(eachone) == 0 or eachone == '<br>' or eachone == '<br/>':
+        #             continue
+        #
+        #         # 把怕取出来的内容放到文件中去
+        #         f.write(eachone + '\n')
+        #     mySplit = fc.split * 100
+        #     f.write(mySplit + '\n')
+        #     f.close()
+        newfilm = { 'name': filmName, 'content': '' }
+        for each in pContent:
+            # 转成string类型，把多余的空格去掉
+            eachone = str(each).strip()
+            if len(eachone) == 0 or eachone == '<br>' or eachone == '<br/>':
+                continue
 
-                # 把怕取出来的内容放到文件中去
-                f.write(eachone + '\n')
-            mySplit = fc.split * 100
-            f.write(mySplit + '\n')
-            f.close()
+            newfilm['content'] += eachone + '\n'
+
+        mop.filmCollection.insert_one(newfilm)
+
         # 以免被反爬虫，每爬一个网页就休息会, 且间隔时间不一样。
         # 每爬5条，就休息10s钟。
         scrap_times += 1
